@@ -1,12 +1,10 @@
 import thing_py
 import json
 
-print(dir(thing_py.thing_py))
-
 try:
-	print(thing_py.bare_calc(12,21))
+	print(thing_py.throw_oops(12,21))
 except ValueError as e:
-	print(f"Bare_calc errored: {e}")
+	print(f"throw_oops errored: {e}")
 
 try:
 	config = { "a": 1, "b": 3 }

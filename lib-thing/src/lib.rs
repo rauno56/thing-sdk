@@ -2,33 +2,32 @@ mod error;
 
 pub use self::error::{Error, Result};
 
-use polars::prelude::*;
-use polars::series::Series;
+use polars::{prelude::NamedFrom, series::Series};
 use serde::Deserialize;
 
 /* Probably a bad practice re-exporting dep types? */
 pub mod pl {
-	pub use polars::prelude::PolarsResult;
+	pub use polars::error::PolarsResult;
 	pub use polars::series::Series;
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Config {
-	a: i32,
-	b: i32,
+	a: u32,
+	b: u32,
 }
 
 impl Config {
-	pub fn new(a: i32, b: i32) -> Self {
+	pub fn new(a: u32, b: u32) -> Self {
 		Config { a, b }
 	}
 }
 
 #[derive(Debug, Clone)]
 pub struct Model {
-	pub a: i32,
-	pub b: i32,
-	pub c: i32,
+	pub a: u32,
+	pub b: u32,
+	pub c: u32,
 	pub series: Series,
 }
 
@@ -43,7 +42,7 @@ impl Model {
 		}
 	}
 
-	pub fn from_json(config: &String) -> Result<Self> {
+	pub fn from_json(config: &str) -> Result<Self> {
 		let config: Config = serde_json::from_str(config)?;
 		let series = Series::new("values".into(), &[config.a, config.b]);
 		Ok(Model {
@@ -54,11 +53,11 @@ impl Model {
 		})
 	}
 
-	pub fn calc(&self, y: i32) -> i32 {
+	pub fn calc(&self, y: u32) -> u32 {
 		self.a + self.c + y
 	}
 
-	pub fn calc_series(&self, y: i32) -> Series {
+	pub fn calc_series(&self, y: u32) -> Series {
 		self.series.clone() + y
 	}
 }

@@ -32,6 +32,7 @@ struct Model {
 impl Model {
 	#[new]
 	fn __new__(api_key: String, config: String) -> PyResult<Self> {
+		// TODO: take api key from WASM config
 		// TODO: Make this meaningful
 		if api_key != "supersecret" {
 			return Err(PyValueError::new_err("invalid api key"));
@@ -40,19 +41,19 @@ impl Model {
 		Ok(Model { model })
 	}
 
-	fn calc(&self, y: i32) -> i32 {
+	fn calc(&self, y: u32) -> u32 {
 		self.model.calc(y)
 	}
 
-	fn calc_series(&self, y: i32) -> PyResult<Vec<i32>> {
+	fn calc_series(&self, y: u32) -> PyResult<Vec<u32>> {
 		let series = self.model.calc_series(y);
-		let elements: Vec<i32> = series.i32().into_pyresult()?.into_no_null_iter().collect();
+		let elements: Vec<u32> = series.u32().into_pyresult()?.into_no_null_iter().collect();
 		Ok(elements)
 	}
 }
 
 #[pyfunction]
-fn bare_calc(_a: usize, _b: usize) -> PyResult<String> {
+fn throw_oops(_a: usize, _b: usize) -> PyResult<String> {
 	// Simulate error
 	Err(PyValueError::new_err("oops!"))
 }
@@ -61,6 +62,6 @@ fn bare_calc(_a: usize, _b: usize) -> PyResult<String> {
 #[pymodule]
 fn thing_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
 	m.add_class::<Model>()?;
-	m.add_function(wrap_pyfunction!(bare_calc, m)?)?;
+	m.add_function(wrap_pyfunction!(throw_oops, m)?)?;
 	Ok(())
 }
